@@ -8,6 +8,8 @@ import androidx.compose.runtime.remember
 typealias Dispatch<A> = (action: A) -> Unit
 typealias Reducer<S, A> = (state: S, action: A) -> S
 typealias Middleware<S, A> = (state: S, action: A, next: (A) -> S) -> S
+typealias Redux<S, A> = (initialState: S, reducer: Reducer<S, A>, middlewares: List<Middleware<S, A>>) -> Pair<S, Dispatch<A>>
+
 fun <S, A> preReducerMiddleware(block: (state: S, action: A) -> Unit): Middleware<S, A> {
     return { state: S, action: A, next: (A) -> S ->
         block(state, action)

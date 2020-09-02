@@ -1,7 +1,7 @@
 package com.example.composetest.presentation
 
-import com.example.composetest.domain.model.Country
+import com.example.composetest.presentation.components.expandablecountrycardlist.ExpandableCountryCardListState
 
 data class MainState(
-    val countryList: List<Country> = emptyList(),
+    val countryListState: ExpandableCountryCardListState = ExpandableCountryCardListState()
 )

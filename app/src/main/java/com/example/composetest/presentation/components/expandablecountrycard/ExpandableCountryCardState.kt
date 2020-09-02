@@ -1,6 +1,9 @@
 package com.example.composetest.presentation.components.expandablecountrycard
 
+import com.example.composetest.domain.model.Country
+
 data class ExpandableCountryCardState(
-    val expanded: Boolean = false
+    val country: Country,
+    val expanded: Boolean = false,
 )
 

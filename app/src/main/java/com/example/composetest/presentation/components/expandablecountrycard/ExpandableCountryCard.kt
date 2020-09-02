@@ -11,20 +11,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.ui.tooling.preview.Preview
 import com.example.composetest.domain.model.Country
-import com.example.composetest.presentation.Reducer
-import com.example.composetest.presentation.redux
+import com.example.composetest.domain.model.CountryCode
+import com.example.composetest.presentation.Dispatch
+import com.example.composetest.presentation.ui.ComposeTestTheme
 
 @Composable
 fun ExpandableCountryCard(
-    country: Country,
-    reducer: Reducer<ExpandableCountryCardState, ExpandableCountryCardAction> = ExpandableCountryCardReducer,
-    initialState: ExpandableCountryCardState = ExpandableCountryCardState(),
+    state: ExpandableCountryCardState,
+    action: Dispatch<ExpandableCountryCardAction>,
 ) {
-    val (state, action) = redux(
-        initialState = initialState,
-        reducer = reducer,
-    )
     Card(
         modifier = Modifier
             .fillMaxWidth(1f)
@@ -36,22 +33,60 @@ fun ExpandableCountryCard(
                 .padding(8.dp)
         ) {
             Text(
-                country.name,
+                state.country.name,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = TextUnit.Sp(18),
             )
             Text(
-                country.capital,
+                state.country.capital,
                 fontWeight = FontWeight.Light,
                 fontSize = TextUnit.Sp(14),
             )
             if (state.expanded) {
                 Text(
-                    country.population.toString(),
+                    state.country.population.toString(),
                     fontWeight = FontWeight.Bold,
                     fontSize = TextUnit.Sp(14),
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun CollapsedCardPreview() {
+    ComposeTestTheme {
+        ExpandableCountryCard(
+            state = ExpandableCountryCardState(
+                country = Country(
+                    CountryCode("USA"),
+                    "United States of America",
+                    "Washington, DC",
+                    331_000_000,
+                    flagUrl = "",
+                    borders = emptyList()
+                )
+            ),
+            action = {})
+    }
+}
+@Preview
+@Composable
+fun ExpandedCardPreview() {
+    ComposeTestTheme {
+        ExpandableCountryCard(
+            state = ExpandableCountryCardState(
+                country = Country(
+                    CountryCode("USA"),
+                    "United States of America",
+                    "Washington, DC",
+                    331_000_000,
+                    flagUrl = "",
+                    borders = emptyList()
+                ),
+                expanded = true,
+            ),
+            action = {})
     }
 }

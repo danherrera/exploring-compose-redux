@@ -1,9 +1,11 @@
 package com.example.composetest.presentation.components.expandablecountrycard
 
 import com.example.composetest.presentation.Reducer
+import javax.inject.Inject
 
-object ExpandableCountryCardReducer :
+class ExpandableCountryCardReducer @Inject constructor() :
     Reducer<ExpandableCountryCardState, ExpandableCountryCardAction> {
+
     override fun invoke(
         state: ExpandableCountryCardState,
         action: ExpandableCountryCardAction
