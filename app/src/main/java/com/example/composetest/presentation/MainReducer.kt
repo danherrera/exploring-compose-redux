@@ -13,13 +13,10 @@ class MainReducer @Inject constructor(
         return when (action) {
             is MainAction.LoadedCountries -> {
                 state.copy(
-                    countryListState =
-                    ExpandableCountryCardListState(
+                    countryListState = ExpandableCountryCardListState(
                         childrenStates = action.countries
                             .map { country ->
-                                ExpandableCountryCardState(
-                                    country = country,
-                                )
+                                ExpandableCountryCardState(country = country)
                             }
                     )
                 )
@@ -32,6 +29,7 @@ class MainReducer @Inject constructor(
                     )
                 )
             }
+            MainAction.ViewAction.ResumeActivity -> state
         }
     }
 }

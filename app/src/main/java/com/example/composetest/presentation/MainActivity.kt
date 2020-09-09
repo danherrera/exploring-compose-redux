@@ -16,32 +16,24 @@ class MainActivity : AppCompatActivity() {
 
     private val viewModel: MainViewModel by viewModels()
 
-    private object Main : StateAction<MainState, MainAction>
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val (state, action) = Main.Redux(
+            val (state, dispatch) = redux(
                 initialState = MainState(),
                 reducer = viewModel.reducer,
+                middlewares = viewModel.middlewares,
             )
-            viewModel.actionEvents.observeEvents(this, action)
+            viewModel.actionEvents.observeEvents(this, dispatch)
 
-            ComposeTestTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(color = MaterialTheme.colors.background) {
-                    Column {
-                        ExpandableCountryCardList(
-                            state = state.countryListState,
-                            action = { action(MainAction.CardListAction(it)) }
-                        )
-                    }
-                }
-            }
+            MainScreen(state = state, dispatch = dispatch)
         }
+    }
 
-        viewModel.getCountries()
+    override fun onResume() {
+        super.onResume()
+        viewModel.viewAction(MainAction.ViewAction.ResumeActivity)
     }
 }
 

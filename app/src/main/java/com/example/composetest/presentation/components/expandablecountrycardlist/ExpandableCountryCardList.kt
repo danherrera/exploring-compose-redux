@@ -13,13 +13,21 @@ import com.example.composetest.presentation.ui.ComposeTestTheme
 @Composable
 fun ExpandableCountryCardList(
     state: ExpandableCountryCardListState,
-    action: Dispatch<ExpandableCountryCardListAction>,
+    dispatch: Dispatch<ExpandableCountryCardListAction>,
 ) {
     ScrollableColumn {
         state.childrenStates.forEachIndexed { index, childState ->
-            ExpandableCountryCard(state = childState, action = { childAction ->
-                action(ExpandableCountryCardListAction.ExpandableCardAction(index, childAction))
-            })
+            ExpandableCountryCard(
+                state = childState,
+                dispatch = { childAction ->
+                    dispatch(
+                        ExpandableCountryCardListAction.ExpandableCardAction(
+                            index,
+                            childAction
+                        )
+                    )
+                }
+            )
         }
     }
 }
@@ -67,7 +75,7 @@ fun CardList() {
                 )
                     .map { ExpandableCountryCardState(it) },
             ),
-            action = {},
+            dispatch = {},
         )
     }
 }

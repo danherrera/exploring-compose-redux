@@ -20,13 +20,13 @@ import com.example.composetest.presentation.ui.ComposeTestTheme
 @Composable
 fun ExpandableCountryCard(
     state: ExpandableCountryCardState,
-    action: Dispatch<ExpandableCountryCardAction>,
+    dispatch: Dispatch<ExpandableCountryCardAction>,
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth(1f)
             .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)
-            .clickable(onClick = { action(ExpandableCountryCardAction.ToggleExpandCollapse) })
+            .clickable(onClick = { dispatch(ExpandableCountryCardAction.ToggleExpandCollapse) })
     ) {
         Column(
             modifier = Modifier
@@ -68,9 +68,11 @@ fun CollapsedCardPreview() {
                     borders = emptyList()
                 )
             ),
-            action = {})
+            dispatch = {},
+        )
     }
 }
+
 @Preview
 @Composable
 fun ExpandedCardPreview() {
@@ -87,6 +89,7 @@ fun ExpandedCardPreview() {
                 ),
                 expanded = true,
             ),
-            action = {})
+            dispatch = {},
+        )
     }
 }

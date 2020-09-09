@@ -17,7 +17,18 @@ class MainViewModel @ViewModelInject constructor(
     val actionEvents: LiveDataEvent<MainAction>
         get() = _actionEvents
 
-    fun getCountries(forceNetwork: Boolean = false) = viewModelScope.launch(Dispatchers.Main) {
+    val middlewares = listOf<Middleware<MainState, MainAction>> { _, action, next ->
+        if (action == MainAction.ViewAction.ResumeActivity) {
+            getCountries()
+        }
+        next(action)
+    }
+
+    fun viewAction(action: MainAction.ViewAction) {
+        _actionEvents.setEvent(action)
+    }
+
+    private fun getCountries(forceNetwork: Boolean = false) = viewModelScope.launch(Dispatchers.Main) {
         withContext(Dispatchers.IO) {
             getAllCountriesFromStorageOrNetworkUseCase(
                 GetAllCountriesFromStorageOrNetworkUseCase.Request(forceNetwork)
