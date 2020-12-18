@@ -53,7 +53,7 @@ fun ExpandableCountryCard(
     }
 }
 
-@Preview
+@Preview("Collapsed")
 @Composable
 fun CollapsedCardPreview() {
     ComposeTestTheme {
@@ -73,7 +73,7 @@ fun CollapsedCardPreview() {
     }
 }
 
-@Preview
+@Preview("Expanded")
 @Composable
 fun ExpandedCardPreview() {
     ComposeTestTheme {
