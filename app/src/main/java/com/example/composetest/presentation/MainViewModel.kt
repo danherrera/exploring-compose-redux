@@ -17,11 +17,11 @@ class MainViewModel @ViewModelInject constructor(
     val actionEvents: LiveDataEvent<MainAction>
         get() = _actionEvents
 
-    val middlewares = listOf<Middleware<MainState, MainAction>> { _, action, next ->
+    val middlewares = listOf<Middleware<MainState, MainAction>> { _, action, dispatch, next ->
         if (action == MainAction.ViewAction.ResumeActivity) {
             getCountries()
         }
-        next(action)
+        next(action, dispatch)
     }
 
     fun viewAction(action: MainAction.ViewAction) {

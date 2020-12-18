@@ -7,21 +7,21 @@ import androidx.compose.runtime.remember
 
 typealias Dispatch<A> = (action: A) -> Unit
 typealias Reducer<S, A> = (state: S, action: A) -> S
-typealias Middleware<S, A> = (state: S, action: A, next: (A) -> S) -> S
+typealias Middleware<S, A> = (state: S, action: A, dispatch: Dispatch<A>, next: (A, Dispatch<A>) -> S) -> S
 typealias Redux<S, A> = (initialState: S, reducer: Reducer<S, A>, middlewares: List<Middleware<S, A>>) -> Pair<S, Dispatch<A>>
 
 data class Store<S, A>(val state: S, val dispatch: Dispatch<A>)
 
 fun <S, A> preReducerMiddleware(block: (state: S, action: A) -> Unit): Middleware<S, A> {
-    return { state: S, action: A, next: (A) -> S ->
+    return { state: S, action: A, dispatch: Dispatch<A>, next: (A, Dispatch<A>) -> S ->
         block(state, action)
-        next(action)
+        next(action, dispatch)
     }
 }
 
 fun <S, A> postReducerMiddleware(block: (previousState: S, latestState: S, action: A) -> Unit): Middleware<S, A> {
-    return { state: S, action: A, next: (A) -> S ->
-        val newState = next(action)
+    return { state: S, action: A, dispatch: Dispatch<A>, next: (A, Dispatch<A>) -> S ->
+        val newState = next(action, dispatch)
         block(state, newState, action)
         newState
     }
@@ -31,28 +31,31 @@ fun <S, A> postReducerMiddleware(block: (previousState: S, latestState: S, actio
 fun <S, A> redux(
     initialState: S,
     reducer: Reducer<S, A> = { state, _ -> state },
-    middlewares: List<Middleware<S, A>> = listOf { _, action, next -> next(action) }
+    middlewares: List<Middleware<S, A>> = listOf { _, action, dispatch, next -> next(action, dispatch) }
 ): Store<S, A> {
     val state = remember { mutableStateOf(initialState) }
     val setState: (S) -> Unit = {
         if (it != state.value) state.value = it
     }
     val reducedMiddleware = middlewares.reduce { acc, middleware ->
-        { state, action, next ->
-            middleware(state, action) { nextAction ->
-                acc(state, nextAction) { accAction ->
-                    next(accAction)
+        { state, action, dispatch, next ->
+            middleware(state, action, dispatch) { nextAction, mwDispatch ->
+                acc(state, nextAction, mwDispatch) { accAction, accDispatch ->
+                    next(accAction, accDispatch)
                 }
             }
         }
     }
+
+    fun dispatch(action: A) {
+        reducedMiddleware(state.value, action, ::dispatch) { middlewareAction, _: Dispatch<A> ->
+            reducer(state.value, middlewareAction).also(setState)
+        }
+    }
+
     return Store(
         state = state.value,
-        dispatch = { action ->
-            reducedMiddleware(state.value, action) { middlewareAction ->
-                reducer(state.value, middlewareAction).also(setState)
-            }
-        }
+        dispatch = ::dispatch
     )
 }
 
@@ -70,7 +73,7 @@ abstract class ReduxActivity<S, A> : AppCompatActivity() {
     fun Redux(
         initialState: S,
         reducer: Reducer<S, A> = { state, _ -> state },
-        middlewares: List<Middleware<S, A>> = listOf { _, action, next -> next(action) }
+        middlewares: List<Middleware<S, A>> = listOf { _, action, dispatch, next -> next(action, dispatch) }
     ): Store<S, A> = redux(initialState, reducer, middlewares)
 }
 
@@ -88,7 +91,7 @@ interface StateAction<S, A> {
     fun Redux(
         initialState: S,
         reducer: Reducer<S, A> = { state, _ -> state },
-        middlewares: List<Middleware<S, A>> = listOf { _, action, next -> next(action) }
+        middlewares: List<Middleware<S, A>> = listOf { _, action, dispatch, next -> next(action, dispatch) }
     ): Store<S, A> = redux(initialState, reducer, middlewares)
 }
 
