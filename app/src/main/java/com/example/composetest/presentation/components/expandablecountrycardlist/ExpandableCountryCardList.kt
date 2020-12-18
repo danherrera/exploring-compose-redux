@@ -2,7 +2,7 @@ package com.example.composetest.presentation.components.expandablecountrycardlis
 
 import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.runtime.Composable
-import androidx.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.composetest.domain.model.Country
 import com.example.composetest.domain.model.CountryCode
 import com.example.composetest.presentation.Dispatch
